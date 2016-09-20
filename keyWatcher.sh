@@ -1,6 +1,7 @@
 #!/bin/bash 
 # 20160908 v0.1 by Jackie Chen: update profile, score requests
 # 20160909 v0.2 by Jackie Chen: import, export profile, delete search job, html format email report
+# 20160220 v0.3 by Jackie Chen: check and view the exposed AWS key in trusted advisor
 
 highlight() 
 { 

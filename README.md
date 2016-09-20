@@ -19,6 +19,9 @@ The blue zone is the logging infrastructure. We turn on CloudTrail in each AWS a
 
 The green zone is keyWatcher, it is simply a bash script plus a redis server. The bash scritp keyWatcher.sh has two main functions - update key profile and score the API call requests. Redis is where the key profiles are saved.
 
+Updates:   
+20/09/2016 Add a new feature to check 'exposed key'  
+
 ### How it works?
 
 Firstly, you need to build profiles for keys manually. The profile is based on the Cloudtrail logs in the past a period of time (24 hours for example). It records the key is used from where (source IP), by what (agent), to where (region) and do what (event). Here is how the profile for key AHATHISISAFAKEKEY looks like:   
@@ -93,6 +96,18 @@ Example:
 ./keyWatcher score_requst "30 min ago"   
 ./keyWatcher score_requst "15 min ago" "AHATHISISAFAKEKEY"    
 
-![score_request](doc/score_request.png)
+![score_request](doc/score_request.png)   
+
+#### Check exposed key    
+This is to refreash the 'exposed AWS key' check in trusted advisor.       
+
+Example:
+./keyWatcher.sh check_exposed_key   
+
+#### View exposed key   
+This is to view the result of the 'exposed AWS key' check.     
+
+Example:    
+./keyWatcher.sh view_exposed_key     
 
 

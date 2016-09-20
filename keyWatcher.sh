@@ -12,7 +12,7 @@ highlight()
 usage()
 {
 	echo ""
-	highlight "./keyWatcher <update_profile|export_profile|import_profile|show_profile|delete_profile|score_request|house_keeping>"
+	highlight "./keyWatcher <update_profile|export_profile|import_profile|show_profile|delete_profile|score_request|house_keeping|view_exposed_key|check_exposed_key>"
 }
 
 check_dep()
@@ -146,7 +146,7 @@ house_keeping()
 {
 	echo ""
 	highlight ">>> Removing temp files"
-	rm -rf .*sumo* .*extract* .*score* .*raw* .*suspicious*
+	rm -rf .*sumo* .*extract* .*score* .*raw* .*suspicious* .*expose*
 	echo done!
 }
 
@@ -305,10 +305,25 @@ score_request()
 	echo done!
 }
 
+view_exposed_key()
+{
+	echo ""
+	highlight ">>> Viewing result of exposed key check" 
+	aws --region us-east-1 support describe-trusted-advisor-check-result --check-id 12Fnkpl8Y5 --query 'result.sort_by(flaggedResources[?status!=`ok`],&metadata[2])[].metadata' --output table | tee -a .$$.exposed_key
+}
+
+check_exposed_key()
+{
+	echo ""
+	highlight ">>> Refreshing exposed key check"
+	aws --region us-east-1 support refresh-trusted-advisor-check --check-id 12Fnkpl8Y5 --query 'status.status'
+}
+
 email_report()
 {
 	echo ""
 	highlight ">>> Sending report"
+	# For suspicious call
 	if [ -f .$$.suspicious_request.html ]; then
 		sed -i '1s/^/\<\/tr\>/' .$$.suspicious_request.html
 		sed -i '1s/^/\<th\>Request\<\/th\>/' .$$.suspicious_request.html
@@ -334,6 +349,13 @@ email_report()
 		mail -s "$(echo -e "[keyWatcher] Suspicious AWS API calls\nContent-Type: text/html")" $RECIPIENT < .$$.suspicious_request.html
 	else
 		echo "No suspicious requests!"
+	fi
+
+	# For exposed key
+	if [ -s .$$.exposed_key ] ; then
+		mail -s "[keyWatcher] Exposed keys are found!" $RECIPIENT < .$$.exposed_key
+	else
+		echo "No exposed key!"
 	fi
 }
 
@@ -381,6 +403,13 @@ case $ACTION in
 		extract_output
 		score_request
 		email_report
+		;;
+	view_exposed_key)
+		view_exposed_key
+		email_report
+		;;
+	check_exposed_key)
+		check_exposed_key
 		;;
 	house_keeping)
 		house_keeping

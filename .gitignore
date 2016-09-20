@@ -1,7 +1,9 @@
 temp
+config
 cookies.txt
 .*sumo*
 .*extract*
 .*score*
 .*raw*
 .*suspicious*
+.*expose*

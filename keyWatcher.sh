@@ -42,14 +42,14 @@ check_connection()
 {
 	echo ""
 	highlight ">>> Checking Internet connection"
-	if [[ ! `curl -s --noproxy echoip.net  http://echoip.net | grep '.'` ]]; then
+	if [[ ! `curl -s --noproxy ipecho.net  http://ipecho.net/plain | grep '.'` ]]; then
 		echo "No Internet connection, checking proxy."	
 		if [[ `export | grep http_proxy` ]]; then
 			echo "Found proxy."
 			# format: http_proxy="http://host:port"
   			PROXY="-x ${http_proxy}"
   			echo "Trying proxy."
-  			if [[ ! `curl $PROXY -s http://echoip.net | grep '.'` ]]; then
+  			if [[ ! `curl $PROXY -s http://ipecho.net/plain | grep '.'` ]]; then
   				echo "Still no Internet connection, exit."
   				exit 1
   			else
